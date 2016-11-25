@@ -9,18 +9,17 @@ using namespace std;
 int main( int argc, char *argv[] ) {
 	
 	char endSignal;
-	int W = 4, L=3;
+	int nbCol = 4, nbLig =3;
 
 	if (argc > 2) {
-		W = atoi(argv[1]);
-		L = atoi(argv[2]);
+		nbLig = atoi(argv[1]);
+		nbCol = atoi(argv[2]);
 	} else {
 		//N = 3;
 		printf ("Pas d'arguments passés, N = 3.\n");
 	}
 
-	int N = L*W;
-
+	int N = nbLig*nbCol;
 	int i;
 	double temperature;
 	MPI_Status etat;
@@ -57,28 +56,26 @@ int main( int argc, char *argv[] ) {
 
 	// Le père communique de façon synchrone avec chacun de
 	// ses fils en utilisant l'espace de communication intercomm
-	for (i=0; i<N+1; i++) {
+	for (i=0; i< N+1; i++) {
 		if (i==0) {
-			// Envoi la largeur du plateau au coordinateur
-			MPI_Send (&W,1,MPI_INT,i,0,intercomm);
-
 			temperature = 20;
 		}
 		else if (i==7)
 			temperature = 50;
 		else 
 			temperature = 30;
+		// Envoi la largeur du plateau au coordinateur
+		MPI_Send (&nbCol, 1, MPI_INT, i, 0, intercomm);
+		// Envoi la longueur du plateau à tous les fils
+		MPI_Send (&nbLig, 1, MPI_INT, i, 0, intercomm);
 
-		MPI_Send (&temperature,1,MPI_DOUBLE,i,0,intercomm);
-
-		// Envoi la longueur du plateau au coordinateur
-		MPI_Send (&L,1,MPI_INT,i,0,intercomm);
+		MPI_Send (&temperature, 1, MPI_DOUBLE, i, 0, intercomm);
 
 		printf ("\nPere : Envoi vers %d.\n", i);
 		
 	}
 
-	for (i=0; i<N+1; i++) {
+	for (i=0; i < N+1; i++) {
 		MPI_Recv(&endSignal, 1, MPI_CHAR,i, 0, intercomm, &etat);
 		printf ("Pere : Reception de %d.\n", i);
 	}
