@@ -1,5 +1,5 @@
 all: master coordinator slave
-	mpirun -np 1 master.out
+	mpirun -np 1 master.out 12
 
 master: master.cpp
 	mpic++ master.cpp -o master.out

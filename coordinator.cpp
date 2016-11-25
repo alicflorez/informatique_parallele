@@ -1,8 +1,16 @@
 #include <mpi.h>
 #include <stdio.h>
+#include <iostream>
+#include <unistd.h>
+
+unsigned int microseconds = 3000;
+
+
+using namespace std;
 
 int main( int argc, char *argv[] ) {
-	int compteur, myrank;
+	int temperature, myrank;
+	char endSignal = "c";
 	MPI_Comm parent;
 	MPI_Status etat;
 	MPI_Init (&argc, &argv);
@@ -13,10 +21,13 @@ int main( int argc, char *argv[] ) {
 		printf ("Fils %d : Coordinateur : Pas de pere !\n", myrank);
 	}
 	else {
-		MPI_Recv(&compteur, 1, MPI_INT, 0, 0, parent, &etat);
+		MPI_Recv(&temperature, 1, MPI_INT, 0, 0, parent, &etat);
+		printf ("Fils %d : Coordinateur : La temperature est de %d !\n", myrank, temperature);
 		printf ("Fils %d : Coordinateur : Reception du pere !\n", myrank);
-		MPI_Send(&compteur, 1, MPI_INT, 0, 0, parent);
+		MPI_Send(&endSignal, 1, MPI_CHAR, 0, 0, parent);
 		printf ("Fils %d : Coordinateur : Envoi vers le pere !\n", myrank);
+		
+		usleep(microseconds);
 	}
 
 	MPI_Finalize();

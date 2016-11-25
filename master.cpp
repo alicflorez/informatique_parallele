@@ -1,23 +1,38 @@
 #include <mpi.h>
 #include <stdio.h>
+#include <iostream>
+#include <stdlib.h>
+
+using namespace std;
+
 
 int main( int argc, char *argv[] ) {
-	int i, compteur;
+	
+	char endSignal;
+	int N = 12;
+
+	if (argc > 1) {
+		N = atoi(argv[1]);
+	} else {
+		//N = 3;
+		printf ("Pas d'arguments passés, N = 3.\n");
+	}
+
+	int i, temperature;
 	MPI_Status etat;
 	char *cmds[2] = {
-		"slave.out",
-		"coordinator.out"
+		"coordinator.out", // Programme 1
+		"slave.out" // Programme 2
 	};
 
-	int np[2] = {
-		12, // On lance 2 instances du programme 1
-		1 // On lance 3 instances du programme 2
-	};
-
+	int np[2];
+	 np[0] = 1; // On lance 2 instances du programme 1
+	 np[1] = N; // On lance N instances du programme 2
+	
 	// Pas d'info supplémentaire pour contrôler le lancement
 	// des programmes 1 et 2
 	MPI_Info infos[2] = { MPI_INFO_NULL, MPI_INFO_NULL };
-	int errcodes[5]; // Les codes de retours des 5 processus
+	int* errcodes = (int*) malloc ( sizeof (int) * (N+1)); // Les codes de retours des 5 processus
 	MPI_Comm intercomm; // L'espace de communication père - fils
 	MPI_Init( &argc, &argv );
 
@@ -38,10 +53,17 @@ int main( int argc, char *argv[] ) {
 
 	// Le père communique de façon synchrone avec chacun de
 	// ses fils en utilisant l'espace de communication intercomm
-	for (i=0; i<5; i++) {
-		MPI_Send (&compteur,1,MPI_INT,i,0,intercomm);
-		printf ("Pere : Envoi vers %d.\n", i);
-		MPI_Recv(&compteur, 1, MPI_INT,i, 0, intercomm, &etat);
+	for (i=0; i<N+1; i++) {
+		if (i==0)
+			temperature = 20;
+		else if (i==7)
+			temperature = 50;
+		else 
+			temperature = 30;
+
+		MPI_Send (&temperature,1,MPI_INT,i,0,intercomm);
+		printf ("\nPere : Envoi vers %d.\n", i);
+		MPI_Recv(&endSignal, 1, MPI_INT,i, 0, intercomm, &etat);
 		printf ("Pere : Reception de %d.\n", i);
 	}
 
