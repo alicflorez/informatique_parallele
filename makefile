@@ -5,7 +5,7 @@ master: master.cpp
 	mpic++ master.cpp -o master.out
 
 coordinator: coordinator.cpp
-	mpic++ coordinator.cpp -o coordinator.out
+	mpic++ coordinator.cpp -o coordinator.out -I/usr/local/include  -lGL -lGLU -lSDL2
 
 slave: slave.cpp
 	mpic++ slave.cpp -o slave.out
