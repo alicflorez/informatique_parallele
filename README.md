@@ -18,6 +18,7 @@ $ make all
 # make install
 ```
 
+Télécharger et installer DSL2 https://www.libsdl.org/download-2.0.php (procédure dans install.txt)
 
 ## Lancer le bordel
 
