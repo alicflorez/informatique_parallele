@@ -5,7 +5,6 @@
 
 unsigned int microseconds = 3000;
 
-
 using namespace std;
 
 int  PlateauToString(int nbLig, int nbCol, double **plateau){
@@ -40,24 +39,24 @@ int main( int argc, char *argv[] ) {
 		MPI_Recv(&nbCol, 1, MPI_INT, 0, 0, parent, &etat);
 		// Reception de la longueur du plateau
 		MPI_Recv(&nbLig, 1, MPI_INT, 0, 0, parent, &etat);
-		printf("Le Coordinateur a reçu la longueur %d du plateau\n", nbLig);
+		//printf("Le Coordinateur a reçu la longueur %d du plateau\n", nbLig);
 		// Calcul du nombre d'esclave
 		N = nbCol*nbLig;
 
 		// Reception de la temperature ambiante
 		MPI_Recv(&temperatureAmbiante, 1, MPI_DOUBLE, 0, 0, parent, &etat);
-		printf ("Fils %d : Coordinateur : La temperature ambiante recue est de %.3lf !\n", myrank, temperatureAmbiante);
+		//printf ("Fils %d : Coordinateur : La temperature ambiante recue est de %.3lf !\n", myrank, temperatureAmbiante);
 
 
 		plateau = new double *[nbLig];
-		for(int i = 0; i < nbCol; i++)
-		    plateau[i] = new double[nbLig];
+		for(int i = 0; i < nbLig; i++)
+		    plateau[i] = new double[nbCol];
 
 		
-		//for (int j=0; j <10; j++){
+		for (int j=0; j <10; j++){
 			// Envoi de la temperature ambiante aux esclaves 10 fois
 			for (int i=0; i < N; i++) {		
-				printf ("Coordinateur envoie temp ambiante vers %d\n", (i+1));
+				//printf ("Coordinateur envoie temp ambiante vers %d\n", (i+1));
 				MPI_Send(&temperatureAmbiante, 1, MPI_DOUBLE, i+1, 0, MPI_COMM_WORLD);
 			}
 
@@ -76,13 +75,21 @@ int main( int argc, char *argv[] ) {
 			}
 
 			PlateauToString(nbLig,nbCol,plateau);
-		//}
+		}
 				
 		// Envoi du message de fin de simulation au maitre
 		printf ("Fils %d : Coordinateur : Envoi vers le pere !\n", myrank);
 		MPI_Send(&endSignal, 1, MPI_CHAR, 0, 0, parent);
-		//usleep(microseconds);
+
+
+		for(int i = 0; i < nbLig; i++)
+		    delete[] plateau[i];
+
+		delete[] plateau;
+
+		//usleep(microseconds);*/
 	}
+	printf ("Fils %d : Coordinateur : fin !\n", myrank);
 
 	MPI_Finalize();
 	return 0;
