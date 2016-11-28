@@ -104,9 +104,8 @@ int main( int argc, char *argv[] ) {
 	MPI_Comm_rank (MPI_COMM_WORLD,&myrank);
 
 	// IHM 
-	SDL_Renderer* displayRenderer = FenetreGraphique_creer (800, 600, -2, 2, -2, 2);
-	FenetreGraphique_initialiser ();
 
+			SDL_Renderer* displayRenderer = FenetreGraphique_creer (800, 600, -2, 2, -2, 2);
 	if (parent == MPI_COMM_NULL) {
 		printf ("Fils %d : Coordinateur : Pas de pere !\n", myrank);
 	}
@@ -117,20 +116,8 @@ int main( int argc, char *argv[] ) {
 		MPI_Recv(&nbLig, 1, MPI_INT, 0, 0, parent, &etat);
 		//printf("Le Coordinateur a reçu la longueur %d du plateau\n", nbLig);
 		
-		int tailleDalle = 
-		for (int i = 0; i < nbLig; i++)
-		{
-			for (int j = 0; j < nbCol; j++)
-			{
-				FenetreGrahique_dessinerRectangle (-(0.95/nbCol), -(0.95/nbLig), (0.95/nbCol), (0.95/nbLig), 1, 0, 1, 0, 1, 0);
-		
-				/* code */
-			}
-			/* code */
-		}
 
-		FenetreGrahique_dessinerRectangle (-(0.95/(nbCol)), -(0.95/(nbLig)), (0.95/(nbCol/2)), (0.95/(nbLig/2)), 1, 0, 1, 0, 1, 0);
-		FenetreGraphique_rendre (displayRenderer);
+		//FenetreGrahique_dessinerRectangle (-(0.95/(nbCol)), -(0.95/(nbLig)), (0.95/(nbCol/2)), (0.95/(nbLig/2)), 1, 0, 1, 0, 1, 0);
 		// Calcul du nombre d'esclave
 		N = nbCol*nbLig;
 
@@ -144,7 +131,10 @@ int main( int argc, char *argv[] ) {
 		    plateau[i] = new double[nbCol];
 
 		
-		for (int j=0; j <10; j++){
+		double xSize=1.6;
+		double ySize=1.6;
+
+		for (int iteration=0; iteration <10; iteration++){
 			// Envoi de la temperature ambiante aux esclaves 10 fois
 			for (int i=0; i < N; i++) {		
 				//printf ("Coordinateur envoie temp ambiante vers %d\n", (i+1));
@@ -154,6 +144,7 @@ int main( int argc, char *argv[] ) {
 			// Pour chaques esclaves 
 			//Attente de la reception de la température de tous les esclaves
 			int nEsclave = 0;
+
 			for (int i=0; i < nbLig; i++) {	
 				for (int j=0; j < nbCol; j++) {	
 					nEsclave++;
@@ -161,11 +152,28 @@ int main( int argc, char *argv[] ) {
 					//printf ("Coordinateur recoit ack de %d\n", nEsclave;
 					MPI_Recv(&temperature, 1, MPI_DOUBLE, nEsclave, 0, MPI_COMM_WORLD, &etat);
 					printf ("Coordinateur : La temperature de %d est de %.3lf !\n", nEsclave, temperature);
+					
+		
 					plateau[i][j] = temperature;
 				}
 			}
-
 			PlateauToString(nbLig,nbCol,plateau);
+			
+			printf(">>>>>>>>>>>>>> Iteration numero %d\n", iteration);
+			FenetreGraphique_initialiser ();
+			for (int i=0; i < nbLig; i++) {	
+				for (int j=0; j < nbCol; j++) {	
+					if (plateau[i][j]>75.0) 
+						FenetreGrahique_dessinerRectangle (-xSize/2+(xSize/nbCol)*j, -ySize/2+(ySize/nbLig)*(i+1), -xSize/2+(xSize/nbCol)*(j+1), -ySize/2+(ySize/nbLig)*i, 1, 0, 0, 0.5, 0.5, 0.5);
+					else if (plateau[i][j]>50.0) 
+						FenetreGrahique_dessinerRectangle (-xSize/2+(xSize/nbCol)*j, -ySize/2+(ySize/nbLig)*(i+1), -xSize/2+(xSize/nbCol)*(j+1), -ySize/2+(ySize/nbLig)*i, 0.75, 0, 0.5, 0.5, 0.5, 0.5);
+					else if (plateau[i][j]>25.0) 
+						FenetreGrahique_dessinerRectangle (-xSize/2+(xSize/nbCol)*j, -ySize/2+(ySize/nbLig)*(i+1), -xSize/2+(xSize/nbCol)*(j+1), -ySize/2+(ySize/nbLig)*i, 0.5, 0, 0.75, 0.5, 0.5, 0.5);
+					else if (plateau[i][j]>0.0) 
+						FenetreGrahique_dessinerRectangle (-xSize/2+(xSize/nbCol)*j, -ySize/2+(ySize/nbLig)*(i+1), -xSize/2+(xSize/nbCol)*(j+1), -ySize/2+(ySize/nbLig)*i, 0, 0, 1, 0.5, 0.5, 0.5);
+				}
+			}
+			FenetreGraphique_rendre (displayRenderer);
 		}
 				
 		// Envoi du message de fin de simulation au maitre

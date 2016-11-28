@@ -58,12 +58,12 @@ int main( int argc, char *argv[] ) {
 	// ses fils en utilisant l'espace de communication intercomm
 	for (i=0; i< N+1; i++) {
 		if (i==0) {
-			temperature = 20;
+			temperature = 0;
 		}
 		else if (i==7)
-			temperature = 50;
+			temperature = 100;
 		else 
-			temperature = 30;
+			temperature = 100;
 		// Envoi la largeur du plateau au coordinateur
 		MPI_Send (&nbCol, 1, MPI_INT, i, 0, intercomm);
 		// Envoi la longueur du plateau à tous les fils
