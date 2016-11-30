@@ -9,7 +9,7 @@ using namespace std;
 int main( int argc, char *argv[] ) {
 	
 	char endSignal;
-	int nbCol = 4, nbLig =3;
+	int nbCol = 5, nbLig =5;
 
 	if (argc > 2) {
 		nbLig = atoi(argv[1]);
@@ -61,7 +61,11 @@ int main( int argc, char *argv[] ) {
 			temperature = 0;
 		}
 		else if (i==7)
+			temperature = 200;
+		else if (i==16)
 			temperature = 100;
+		else if (i==1)
+			temperature = 500;
 		else 
 			temperature = 100;
 		// Envoi la largeur du plateau au coordinateur

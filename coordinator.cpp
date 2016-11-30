@@ -44,13 +44,17 @@ SDL_Renderer* FenetreGraphique_creer (int largeurDeLaFenetre, int hauteurDeLaFen
 } 
 
 void FenetreGraphique_initialiser () {
-	glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glMatrixMode (GL_PROJECTION);
+	glLoadIdentity();
+	//glOrtho (-3, 3, -3, 3, -1.0, 1.0);
+	glMatrixMode (GL_MODELVIEW);
+	glLoadIdentity();
 }
 
 void FenetreGraphique_rendre (SDL_Renderer* displayRenderer) {
 	SDL_RenderPresent (displayRenderer);
-	SDL_Delay(5000);
+	SDL_Delay(800);
 }
 
 void FenetreGraphique_fermer () {
@@ -105,11 +109,11 @@ int main( int argc, char *argv[] ) {
 
 	// IHM 
 
-			SDL_Renderer* displayRenderer = FenetreGraphique_creer (800, 600, -2, 2, -2, 2);
+	SDL_Renderer* displayRenderer = FenetreGraphique_creer (800, 600, -2, 2, -2, 2);
+	
 	if (parent == MPI_COMM_NULL) {
 		printf ("Fils %d : Coordinateur : Pas de pere !\n", myrank);
-	}
-	else {
+	} else {
 		// Reception de la largeur du plateau
 		MPI_Recv(&nbCol, 1, MPI_INT, 0, 0, parent, &etat);
 		// Reception de la longueur du plateau
@@ -130,6 +134,9 @@ int main( int argc, char *argv[] ) {
 		for(int i = 0; i < nbLig; i++)
 		    plateau[i] = new double[nbCol];
 
+
+ 		FenetreGraphique_rendre (displayRenderer);
+		FenetreGraphique_initialiser ();
 		
 		double xSize=1.6;
 		double ySize=1.6;
@@ -159,18 +166,17 @@ int main( int argc, char *argv[] ) {
 			}
 			PlateauToString(nbLig,nbCol,plateau);
 			
-			printf(">>>>>>>>>>>>>> Iteration numero %d\n", iteration);
 			FenetreGraphique_initialiser ();
 			for (int i=0; i < nbLig; i++) {	
 				for (int j=0; j < nbCol; j++) {	
 					if (plateau[i][j]>75.0) 
 						FenetreGrahique_dessinerRectangle (-xSize/2+(xSize/nbCol)*j, -ySize/2+(ySize/nbLig)*(i+1), -xSize/2+(xSize/nbCol)*(j+1), -ySize/2+(ySize/nbLig)*i, 1, 0, 0, 0.5, 0.5, 0.5);
 					else if (plateau[i][j]>50.0) 
-						FenetreGrahique_dessinerRectangle (-xSize/2+(xSize/nbCol)*j, -ySize/2+(ySize/nbLig)*(i+1), -xSize/2+(xSize/nbCol)*(j+1), -ySize/2+(ySize/nbLig)*i, 0.75, 0, 0.5, 0.5, 0.5, 0.5);
+						FenetreGrahique_dessinerRectangle (-xSize/2+(xSize/nbCol)*j, -ySize/2+(ySize/nbLig)*(i+1), -xSize/2+(xSize/nbCol)*(j+1), -ySize/2+(ySize/nbLig)*i, 0.75, 0, 0.33, 0.5, 0.5, 0.5);
 					else if (plateau[i][j]>25.0) 
-						FenetreGrahique_dessinerRectangle (-xSize/2+(xSize/nbCol)*j, -ySize/2+(ySize/nbLig)*(i+1), -xSize/2+(xSize/nbCol)*(j+1), -ySize/2+(ySize/nbLig)*i, 0.5, 0, 0.75, 0.5, 0.5, 0.5);
+						FenetreGrahique_dessinerRectangle (-xSize/2+(xSize/nbCol)*j, -ySize/2+(ySize/nbLig)*(i+1), -xSize/2+(xSize/nbCol)*(j+1), -ySize/2+(ySize/nbLig)*i, 0.5, 0, 0.66, 0.5, 0.5, 0.5);
 					else if (plateau[i][j]>0.0) 
-						FenetreGrahique_dessinerRectangle (-xSize/2+(xSize/nbCol)*j, -ySize/2+(ySize/nbLig)*(i+1), -xSize/2+(xSize/nbCol)*(j+1), -ySize/2+(ySize/nbLig)*i, 0, 0, 1, 0.5, 0.5, 0.5);
+						FenetreGrahique_dessinerRectangle (-xSize/2+(xSize/nbCol)*j, -ySize/2+(ySize/nbLig)*(i+1), -xSize/2+(xSize/nbCol)*(j+1), -ySize/2+(ySize/nbLig)*i, 0.25, 0, 1, 0.5, 0.5, 0.5);
 				}
 			}
 			FenetreGraphique_rendre (displayRenderer);
