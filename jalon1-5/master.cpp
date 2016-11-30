@@ -16,7 +16,7 @@ int main( int argc, char *argv[] ) {
 		nbCol = atoi(argv[2]);
 	} else {
 		//N = 3;
-		printf ("Pas d'arguments passés, N = 3.\n");
+		printf ("Pas d'arguments passés, N = %d.\n", nbCol*nbLig);
 	}
 
 	int N = nbLig*nbCol;
