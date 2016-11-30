@@ -1,6 +1,9 @@
 #include <mpi.h>
 #include <stdio.h>
 #include <iostream>
+#include <omp.h>
+/*#include <sys/time.h>
+#include <sys/resource.h>*/
 
 using namespace std;
 
@@ -31,6 +34,64 @@ void PlateauDoubleToString(int nbLig, int nbCol, double **plateau){
 
 int main( int argc, char *argv[] ) {
 
+	/*struct rusage ru1, ru2;
+	getrusage(RUSAGE_SELF, &ru1);*/
+
+	int nbLig = 3;
+	int nbCol = 3;
+
+	double temperatureAmbiante = 20.0;
+
+	double **tableauDepart = new double *[nbLig];
+	double **tableauResultat = new double *[nbLig];
+
+	for(int i = 0; i < nbLig; i++){
+	    tableauDepart[i] = new double[nbCol];
+	    tableauResultat[i] = new double[nbCol];
+	}
+
+	for(int i = 0; i <nbLig; i++)
+		for (int j = 0; j < nbCol; j++)
+			tableauDepart[i][j] = 30;
+
+	omp_set_nested(1);
+	#pragma omp parallel for num_threads (nbLig)
+		for (int positionLig = 0; positionLig < nbLig; positionLig++)
+		{
+			#pragma omp parallel for num_threads (nbCol)
+				for (int positionCol = 0; positionCol < nbCol; positionCol++)
+				{
+
+					double **voisinsTemperatures = new double *[3];
+					for(int i = 0; i < 3; i++)
+					    voisinsTemperatures[i] = new double[3];
+
+					for(int y=-1; y<=1; y++) {
+						for(int x=-1; x<=1; x++) {
+							if ((positionLig+y >= 0 && positionLig+y < nbLig ) && (positionCol+x >= 0 && positionCol+x < nbCol ))//rangPlateau[positionLig+y][positionCol+x]!=-1)
+								voisinsTemperatures[y+1][x+1] = tableauDepart[positionLig+y][positionCol+x];
+							else
+								voisinsTemperatures[y+1][x+1] = temperatureAmbiante;
+						}
+					}
+
+					int sum = 0;
+					for (int i = 0; i < 3; i++)
+						for (int j = 0; j < 3; j++){ 
+							sum += voisinsTemperatures[i][j]; 
+						}
+
+					tableauDepart[positionLig][positionCol] = sum / 9;
+
+				}
+		}
+	
+
+	PlateauDoubleToString(nbLig, nbCol, tableauDepart);
+
+	//getrusage(RUSAGE_SELF, &ru2);
+
+/*
 	// Propriétés
 	double temperature, temperatureAmbiante;
 	int nbCol, nbLig, positionLig, positionCol;
@@ -39,38 +100,7 @@ int main( int argc, char *argv[] ) {
 	double **tempVoisins;
 	int **rangPlateau;
 
-	// Initialisation communication
-	MPI_Comm parent;
-	MPI_Status etat;
-	MPI_Init (&argc, &argv);
-	MPI_Comm_get_parent (&parent);
-	MPI_Comm_rank (MPI_COMM_WORLD,&myrank);
-	MPI_Request req;
 
-
-	
-	if (parent == MPI_COMM_NULL) {
-		printf ("Fils %d : Esclave : Pas de pere !\n", myrank);
-	} else {
-
-		// Reception de la largeur de la part du maitre
-		MPI_Recv(&nbCol, 1, MPI_INT, 0, 0, parent, &etat);
-		//printf("Fils %d : Esclave a reçu la longueur %d du plateau\n", myrank, nbCol );
-		// Reception de la longueur de la part du maitre
-		MPI_Recv(&nbLig, 1, MPI_INT, 0, 0, parent, &etat);
-		//printf("Fils %d : Esclave a reçu la longueur %d du plateau\n", myrank, nbCol );
-
-
-
-
-		// Reception de la température de la dalle
-		MPI_Recv(&temperature, 1, MPI_DOUBLE, 0, 0, parent, &etat);
-		//printf ("Fils %d : Esclave : La temperature est de %.3lf !\n", myrank, temperature);
-
-		// Envoi du message de "bonne reception" au MAITRE
-		MPI_Send(&endSignal, 1, MPI_CHAR, 0, 0, parent);
-		//printf ("Fils %d : Esclave : Envoi vers le pere !\n", myrank);
-		
 		//Calcul de la position du carré sur le plateau
 		positionCol = (myrank-1)%nbCol;
 		positionLig = (myrank-1)/nbCol;
@@ -148,9 +178,6 @@ int main( int argc, char *argv[] ) {
 
 			printf("Fils %d : L'Esclave a mis à jour sa temperature ! \n", myrank );
 			//PlateauDoubleToString(3,3, tempVoisins);
-			
-			// Envoi du ACK au coordinateur
-			MPI_Send(&temperature, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
 
 		}
 
@@ -170,7 +197,6 @@ int main( int argc, char *argv[] ) {
 	}
 
 	printf ("Fils %d : Slave: Fin !\n", myrank);
-
-	MPI_Finalize();
+*/
 	return 0;
 }
