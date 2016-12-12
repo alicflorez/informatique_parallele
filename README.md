@@ -23,5 +23,5 @@ Télécharger et installer DSL2 https://www.libsdl.org/download-2.0.php (procéd
 ## Lancer le bordel
 
 ```
-$ make makefile all
+$ make all
 ```
