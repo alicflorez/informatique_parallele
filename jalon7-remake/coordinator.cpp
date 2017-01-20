@@ -14,15 +14,6 @@ unsigned int microseconds = 3000;
 
 using namespace std;
 
-int  PlateauToString(int nbLig, int nbCol, double **plateau){
-    for (int i = 0; i < nbLig; i++)
-    {
-        for(int j = 0; j < nbCol; j++){
-            printf("| %.3lf ", plateau[i][j] );
-        }
-        printf("|\n");
-    }
-}
 
 
 SDL_Renderer* FenetreGraphique_creer (int largeurDeLaFenetre, int hauteurDeLaFenetre, double xMin, 
@@ -174,7 +165,7 @@ int main( int argc, char *argv[] ) {
                     plateau[i][j] = temperature;
                 }
             }
-            PlateauToString(nbLig,nbCol,plateau);
+            //PlateauToString(nbLig,nbCol,plateau);
 
             FenetreGraphique_representer_plaque (plateau, nbLig, nbCol);
                     

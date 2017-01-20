@@ -1,25 +1,26 @@
 #include <mpi.h>
 #include <stdio.h>
-#include <iostream>
 #include <stdlib.h>
+#include "Plaque_Metal.h"
 
 using namespace std;
 
 
 int main( int argc, char *argv[] ) {
     char endSignal;
-    int nbCol = 5, nbLig =5, nbCycles=10;
-
+    char*  filename;
+    int nbCycles;
     if (argc > 2) {
-        nbLig = atoi(argv[1]);
-        nbCol = atoi(argv[2]);
+        filename = argv[1];
+        nbCycles = atoi(argv[2]);
     } else {
-        //N = 3;
-        printf ("Pas d'arguments passés, N = %d.\n", nbCol*nbLig);
+        printf ("Pas assez d'arguments passés: nom fichier / nombre de cycles de refroidissement.\n");
+        exit(EXIT_FAILURE);
     }
-
+    
+    Plaque_Metal plateau(filename);    
+    
     int N = nbLig*nbCol;
-    int i;
     double temperature, temperatureAmbiante = 20.0;
     MPI_Status etat;
     char *cmds[2] = {
@@ -57,16 +58,16 @@ int main( int argc, char *argv[] ) {
     // ses fils en utilisant l'espace de communication intercomm
     
     #pragma omp parallel for num_threads (N+1)
-    for (i=0; i< N+1; i++) {
+    for (int i=0; i< N+1; i++) {
         temperature = 100;
         
         // Envoi la largeur du plateau au coordinateur
-        MPI_Send (&nbCol, 1, MPI_INT, i, 0, intercomm);
+        MPI_Send (&plateau.getX(), 1, MPI_INT, i, 0, intercomm);
         // Envoi la longueur du plateau à tous les fils
-        MPI_Send (&nbLig, 1, MPI_INT, i, 0, intercomm);
-        
-        
+        MPI_Send (&plateau.getY(), 1, MPI_INT, i, 0, intercomm);
+                
         MPI_Send (&nbCycles, 1, MPI_INT, i, 0, intercomm);
+        
         
         if (i == 0)
             MPI_Send (&temperatureAmbiante, 1, MPI_DOUBLE, i, 0, intercomm);
@@ -76,7 +77,7 @@ int main( int argc, char *argv[] ) {
         printf ("\nPere : Envoi vers %d.\n", i);
     }
 
-    for (i=0; i < N+1; i++) {
+    for (int i=0; i < N+1; i++) {
         MPI_Recv(&endSignal, 1, MPI_CHAR,i, 0, intercomm, &etat);
         printf ("Pere : Reception de %d.\n", i);
     }

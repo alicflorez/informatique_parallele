@@ -14,7 +14,7 @@ void  PlateauToString(int nbLig, int nbCol, int **plateau){
         for(int j = 0; j < nbCol; j++){
             printf("| %d ", plateau[i][j] );
         }
-        printf("| \n", myrank);
+        printf("|\n");
     }
 }
 
