@@ -47,7 +47,7 @@ Plaque_Metal::Plaque_Metal(char *filename) {
 }
 
 double Plaque_Metal::getAverage(int y, int x) {return plateau[y*getX()+x].getAverage();}
-Case_Plateau *Plaque_Metal::getByNCase(int nCase) {return plateau[nCase].get();}
+Case_Plateau Plaque_Metal::getByNCase(int nCase) {return plateau[nCase];}
 
 void Plaque_Metal::set(int y, int x, double val) {plateau[y*getX()+x].set(val);}
 
@@ -57,7 +57,7 @@ int Plaque_Metal::getX() {return x;}
 void Plaque_Metal::print(){
     for (int y=0; y<getY(); y++) {
         for(int x=0; x<getX(); x++) {
-            printf("| %.3lf ", get(y, x));
+            printf("| %.3lf ", getAverage(y, x));
         }
         printf("|\n");
     }

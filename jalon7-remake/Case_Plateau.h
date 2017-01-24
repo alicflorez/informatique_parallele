@@ -29,6 +29,7 @@ public:
     
     void set(double temperature);
     double *get();
+    int getTaille();
     double getAverage();
 };
 

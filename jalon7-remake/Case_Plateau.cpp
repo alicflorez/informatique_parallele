@@ -30,3 +30,6 @@ double Case_Plateau::getAverage() {
     }
     return total/(this->taille_matrice*this->taille_matrice);
 }
+int Case_Plateau::getTaille() {
+    return taille_matrice;
+}

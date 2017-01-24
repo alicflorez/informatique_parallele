@@ -1,90 +1,14 @@
 #include <mpi.h>
 #include <stdio.h>
-#include <iostream>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_opengl.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+//#include <iostream>
+//#include <unistd.h>
+//#include <stdlib.h>
+//#include <string.h>
+//#include <math.h>
+#include "IHM.h"
 
-unsigned int microseconds = 3000;
 
 using namespace std;
-
-
-
-SDL_Renderer* FenetreGraphique_creer (int largeurDeLaFenetre, int hauteurDeLaFenetre, double xMin, 
-										double xMax, double yMin, double yMax) {
-    SDL_Init (SDL_INIT_VIDEO);
-    SDL_Window* displayWindow;
-    SDL_RendererInfo displayRendererInfo;
-    SDL_Renderer* displayRenderer;
-    SDL_CreateWindowAndRenderer (largeurDeLaFenetre, hauteurDeLaFenetre, SDL_WINDOW_OPENGL,
-    &displayWindow, &displayRenderer);
-    SDL_GetRendererInfo(displayRenderer, &displayRendererInfo);
-    glViewport (0, 0, (GLsizei) largeurDeLaFenetre, (GLsizei) hauteurDeLaFenetre);
-    glMatrixMode( GL_PROJECTION );
-    glLoadIdentity( );
-    glOrtho (xMin, xMax, yMin, yMax, 1, -1);
-    glMatrixMode( GL_MODELVIEW );
-    glLoadIdentity( );
-    return displayRenderer;
-} 
-
-void FenetreGraphique_initialiser () {
-    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glMatrixMode (GL_PROJECTION);
-    glLoadIdentity();
-    //glOrtho (-3, 3, -3, 3, -1.0, 1.0);
-    glMatrixMode (GL_MODELVIEW);
-    glLoadIdentity();
-}
-
-void FenetreGraphique_rendre (SDL_Renderer* displayRenderer) {
-    SDL_RenderPresent (displayRenderer);
-    SDL_Delay(800);
-}
-
-void FenetreGraphique_fermer () {
-    SDL_Quit();
-}
-
-void FenetreGrahique_dessinerRectangle (double x1, double y1, double x2, double y2,
-										float fondR, float fondV, float fondB,
-										float formeR, float formeV, float formeB) {
-    glColor3f (fondR, fondV ,fondB);
-
-    glBegin (GL_QUADS);
-        glVertex2f (x1, y1);
-        glVertex2f (x2, y1);
-        glVertex2f (x2, y2);
-        glVertex2f (x1, y2);
-    glEnd ();
-
-    glColor3f (formeR, formeV ,formeB);
-
-    glBegin (GL_LINE_LOOP);
-        glVertex2f (x1, y1);
-        glVertex2f (x2, y1);
-        glVertex2f (x2, y2);
-        glVertex2f (x1, y2);
-    glEnd ();
-}
-
-double xSize=1.6;
-double ySize=1.6;
-void FenetreGraphique_representer_plaque (double **plateau, int nbLig, int nbCol) {
-    for (int i=0; i < nbLig; i++) {	
-        for (int j=0; j < nbCol; j++) {	
-            FenetreGrahique_dessinerRectangle (-xSize/2+(xSize/nbCol)*j, -ySize/2+(ySize/nbLig)*(i+1), -xSize/2+(xSize/nbCol)*(j+1), -ySize/2+(ySize/nbLig)*i, 
-                    plateau[i][j]/75, 0, 1-plateau[i][j]/75, 
-                    0.5, 0.5, 0.5);
-        }
-    }
-}
 
 /*
 int main(int argc, char *argv[]) {
@@ -113,7 +37,7 @@ int main( int argc, char *argv[] ) {
 
     // IHM 
 
-    SDL_Renderer* displayRenderer = FenetreGraphique_creer (800, 600, -2, 2, -2, 2);
+    IHM ihm = IHM(800, 600, -2, 2, -2, 2);
 
     if (parent == MPI_COMM_NULL) {
         printf ("Fils %d : Coordinateur : Pas de pere !\n", myrank);
@@ -139,9 +63,8 @@ int main( int argc, char *argv[] ) {
         for(int i = 0; i < nbLig; i++)
             plateau[i] = new double[nbCol];
 
-
-        FenetreGraphique_rendre (displayRenderer);
-        FenetreGraphique_initialiser ();
+        ihm.FenetreGraphique_rendre();
+        ihm.FenetreGraphique_initialiser();
 
         for (int iteration=0; iteration < nbCycles; iteration++){
             // Envoi de la temperature ambiante aux esclaves 10 fois
@@ -167,9 +90,8 @@ int main( int argc, char *argv[] ) {
             }
             //PlateauToString(nbLig,nbCol,plateau);
 
-            FenetreGraphique_representer_plaque (plateau, nbLig, nbCol);
-                    
-            FenetreGraphique_rendre (displayRenderer);
+            ihm.FenetreGraphique_representer_plaque(plateau, nbLig, nbCol);
+            ihm.FenetreGraphique_rendre();
         }
 
         // Envoi du message de fin de simulation au maitre
@@ -188,6 +110,6 @@ int main( int argc, char *argv[] ) {
 
     MPI_Finalize();
 
-    FenetreGraphique_fermer ();
+    ihm.FenetreGraphique_fermer();
     return 0;
 }

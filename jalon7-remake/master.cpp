@@ -22,7 +22,7 @@ int main( int argc, char *argv[] ) {
     int nbLig=plateau.getY(), nbCol=plateau.getX();
     
     int N = nbLig*nbCol;
-    double temperature, temperatureAmbiante = 20.0;
+    double temperature, temperatureAmbiante = 10.0;
     MPI_Status etat;
     char *cmds[2] = {
             "coordinator.out", // Programme 1
@@ -73,8 +73,8 @@ int main( int argc, char *argv[] ) {
         if (i == 0)
             MPI_Send (&temperatureAmbiante, 1, MPI_DOUBLE, i, 0, intercomm);
         else {
-            Case_Plateau *caseEsclave=plateau.getByNCase(i-1);
-            MPI_Send (&caseEsclave, 1, MPI_, i, 0, intercomm);
+            double caseEsclave=plateau.getByNCase(i-1).getAverage();
+            MPI_Send (&caseEsclave, 1, MPI_DOUBLE, i, 0, intercomm);
         }
         printf ("\nPere : Envoi vers %d.\n", i);
     }
