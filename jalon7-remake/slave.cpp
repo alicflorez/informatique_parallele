@@ -1,6 +1,7 @@
 #include <mpi.h>
 #include <stdio.h>
 #include <iostream>
+#include "Case_Plateau.h"
 
 using namespace std;
 
@@ -31,7 +32,8 @@ void PlateauDoubleToString(int nbLig, int nbCol, double **plateau){
 int main( int argc, char *argv[] ) {
 
     // Propriétés
-    double temperature, temperatureAmbiante;
+    Case_Plateau temperature;
+    double temperatureAmbiante;
     int nbCol, nbLig, positionLig, positionCol, nbCycles;
     char endSignal = 'e';
     int **voisins;
@@ -61,13 +63,15 @@ int main( int argc, char *argv[] ) {
         MPI_Recv(&nbCycles, 1, MPI_INT, 0, 0, parent, &etat);
 
         // Reception de la température de la dalle
-        MPI_Recv(&temperature, 1, MPI_DOUBLE, 0, 0, parent, &etat);
+        MPI_Recv(&temperature, 1, MPI_Datatype, 0, 0, parent, &etat);
         //printf ("Fils %d : Esclave : La temperature est de %.3lf !\n", myrank, temperature);
 
         // Envoi du message de "bonne reception" au MAITRE
         MPI_Send(&endSignal, 1, MPI_CHAR, 0, 0, parent);
         //printf ("Fils %d : Esclave : Envoi vers le pere !\n", myrank);
 
+        cout << "Slave " << myrank << " : " << temperature.getAverage();
+   /*     
         //Calcul de la position du carré sur le plateau
         positionCol = (myrank-1)%nbCol;
         positionLig = (myrank-1)/nbCol;
@@ -155,6 +159,7 @@ int main( int argc, char *argv[] ) {
             delete[] voisins[i];
             delete[] tempVoisins[i];
         }
+    */
 
         delete[] tempVoisins;
         delete[] voisins;

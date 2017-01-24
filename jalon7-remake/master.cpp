@@ -18,7 +18,8 @@ int main( int argc, char *argv[] ) {
         exit(EXIT_FAILURE);
     }
     
-    Plaque_Metal plateau(filename);    
+    Plaque_Metal plateau(filename); 
+    int nbLig=plateau.getY(), nbCol=plateau.getX();
     
     int N = nbLig*nbCol;
     double temperature, temperatureAmbiante = 20.0;
@@ -62,18 +63,19 @@ int main( int argc, char *argv[] ) {
         temperature = 100;
         
         // Envoi la largeur du plateau au coordinateur
-        MPI_Send (&plateau.getX(), 1, MPI_INT, i, 0, intercomm);
+        MPI_Send (&nbCol, 1, MPI_INT, i, 0, intercomm);
         // Envoi la longueur du plateau à tous les fils
-        MPI_Send (&plateau.getY(), 1, MPI_INT, i, 0, intercomm);
+        MPI_Send (&nbLig, 1, MPI_INT, i, 0, intercomm);
                 
         MPI_Send (&nbCycles, 1, MPI_INT, i, 0, intercomm);
         
         
         if (i == 0)
             MPI_Send (&temperatureAmbiante, 1, MPI_DOUBLE, i, 0, intercomm);
-        else 
-            MPI_Send (&temperature, 1, MPI_DOUBLE, i, 0, intercomm);
-
+        else {
+            Case_Plateau *caseEsclave=plateau.getByNCase(i-1);
+            MPI_Send (&caseEsclave, 1, MPI_, i, 0, intercomm);
+        }
         printf ("\nPere : Envoi vers %d.\n", i);
     }
 

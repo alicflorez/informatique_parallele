@@ -30,7 +30,8 @@ public:
     // Constructeurs
     Plaque_Metal(char *filename);
 
-    double get(int y, int x);
+    double getAverage(int y, int x);
+    Case_Plateau* getByNCase(int nCase);
     void set(int y, int x, double val);
 
     int getY();

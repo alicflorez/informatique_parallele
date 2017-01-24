@@ -6,14 +6,14 @@
  * and open the template in the editor.
  */
 #include "Plaque_Metal.h"
+
 // Constructeurs      
 Plaque_Metal::Plaque_Metal(char *filename) {
-    ifstream file;
-    file.open(filename); 
     string line;
     string file_text="";
     string number;
     
+    ifstream file; file.open(filename); 
     int y=0;
     while(getline(file, line)) {
         int x=0;
@@ -46,7 +46,8 @@ Plaque_Metal::Plaque_Metal(char *filename) {
     print();
 }
 
-double Plaque_Metal::get(int y, int x) {return plateau[y*getX()+x].getAverage();}
+double Plaque_Metal::getAverage(int y, int x) {return plateau[y*getX()+x].getAverage();}
+Case_Plateau *Plaque_Metal::getByNCase(int nCase) {return plateau[nCase].get();}
 
 void Plaque_Metal::set(int y, int x, double val) {plateau[y*getX()+x].set(val);}
 

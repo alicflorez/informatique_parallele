@@ -16,6 +16,7 @@
 
 #include <stdlib.h>
 #include <iostream>
+
 using namespace std;
 
 class Case_Plateau {
