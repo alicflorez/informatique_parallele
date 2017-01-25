@@ -70,6 +70,13 @@ int main( int argc, char *argv[] ) {
         MPI_Send(&endSignal, 1, MPI_CHAR, 0, 0, parent);
         //printf ("Fils %d : Esclave : Envoi vers le pere !\n", myrank);
         
+        
+        // Reception de la température ambiante de la part du coordinateur
+        MPI_Recv(&temperatureAmbiante, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &etat);
+        //printf ("Fils %d : Esclave : La temperature ambiante est de %.3lf !\n", myrank, temperatureAmbiante);
+        
+        MPI_Send(&temperature, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+        
         //Calcul de la position du carré sur le plateau
         positionCol = (myrank-1)%nbCol;
         positionLig = (myrank-1)/nbCol;
@@ -106,10 +113,6 @@ int main( int argc, char *argv[] ) {
         }
 
         for (int cycle=0; cycle < nbCycles; cycle++) {
-            // Reception de la température ambiante de la part du coordinateur
-            MPI_Recv(&temperatureAmbiante, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &etat);
-            //printf ("Fils %d : Esclave : La temperature ambiante est de %.3lf !\n", myrank, temperatureAmbiante);
-
             // Envoi de la température à tous les voisins
             for(int i = 0; i < 3; i++)
                 for(int j = 0; j < 3; j++) {

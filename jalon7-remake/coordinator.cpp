@@ -10,6 +10,15 @@
 
 using namespace std;
 
+void  PlateauToString(int nbLig, int nbCol, double **plateau){
+	
+    for (int i = 0; i < nbLig; i++) {
+        for(int j = 0; j < nbCol; j++){
+            printf("| %.3lf ", plateau[i][j] );
+        }
+        printf("|\n");
+    }
+}
 /*
 int main(int argc, char *argv[]) {
 	SDL_Renderer* displayRenderer = FenetreGraphique_creer (800, 600, -2, 2, -2, 2);
@@ -63,19 +72,37 @@ int main( int argc, char *argv[] ) {
         for(int i = 0; i < nbLig; i++)
             plateau[i] = new double[nbCol];
 
+        // Envoi de la temperature ambiante aux esclaves 10 fois
+        for (int i=0; i < N; i++) {		
+            //printf ("Coordinateur envoie temp ambiante vers %d\n", (i+1));
+            MPI_Send(&temperatureAmbiante, 1, MPI_DOUBLE, i+1, 0, MPI_COMM_WORLD);
+        }
+            
         ihm.FenetreGraphique_rendre();
         ihm.FenetreGraphique_initialiser();
+        
+        int nEsclave = 0;
+        for (int i=0; i < nbLig; i++) {	
+            for (int j=0; j < nbCol; j++) {	
+                nEsclave++;
+                double temperature;					
+                //printf ("Coordinateur recoit ack de %d\n", nEsclave;
+                MPI_Recv(&temperature, 1, MPI_DOUBLE, nEsclave, 0, MPI_COMM_WORLD, &etat);
+                printf ("Coordinateur : La temperature de %d est de %.3lf !\n", nEsclave, temperature);
 
-        for (int iteration=0; iteration < nbCycles; iteration++){
-            // Envoi de la temperature ambiante aux esclaves 10 fois
-            for (int i=0; i < N; i++) {		
-                //printf ("Coordinateur envoie temp ambiante vers %d\n", (i+1));
-                MPI_Send(&temperatureAmbiante, 1, MPI_DOUBLE, i+1, 0, MPI_COMM_WORLD);
+                plateau[i][j] = temperature;
             }
+        }
+            
+        ihm.FenetreGraphique_representer_plaque(plateau, nbLig, nbCol);
+        ihm.FenetreGraphique_rendre();        
+        PlateauToString(nbLig,nbCol,plateau);
+        
+        for (int iteration=0; iteration < nbCycles; iteration++){
 
             // Pour chaques esclaves 
             //Attente de la reception de la température de tous les esclaves
-            int nEsclave = 0;
+            nEsclave = 0;
 
             for (int i=0; i < nbLig; i++) {	
                 for (int j=0; j < nbCol; j++) {	
@@ -88,7 +115,7 @@ int main( int argc, char *argv[] ) {
                     plateau[i][j] = temperature;
                 }
             }
-            //PlateauToString(nbLig,nbCol,plateau);
+            PlateauToString(nbLig,nbCol,plateau);
 
             ihm.FenetreGraphique_representer_plaque(plateau, nbLig, nbCol);
             ihm.FenetreGraphique_rendre();

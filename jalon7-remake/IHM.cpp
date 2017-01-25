@@ -67,7 +67,11 @@ void IHM::FenetreGrahique_dessinerRectangle (double x1, double y1, double x2, do
 void IHM::FenetreGraphique_representer_plaque (double **plateau, int nbLig, int nbCol) {
     for (int i=0; i < nbLig; i++) {	
         for (int j=0; j < nbCol; j++) {	
-            FenetreGrahique_dessinerRectangle (-xSize/2+(xSize/nbCol)*j, -ySize/2+(ySize/nbLig)*(i+1), -xSize/2+(xSize/nbCol)*(j+1), -ySize/2+(ySize/nbLig)*i, 
+            FenetreGrahique_dessinerRectangle (
+                    -xSize/2+(xSize/nbCol)*j, 
+                    -(-ySize/2+(ySize/nbLig)*(i+1)), 
+                    -xSize/2+(xSize/nbCol)*(j+1), 
+                    -(-ySize/2+(ySize/nbLig)*i), 
                     plateau[i][j]/90, 0, 1-plateau[i][j]/90, 
                     0.5, 0.5, 0.5);
         }

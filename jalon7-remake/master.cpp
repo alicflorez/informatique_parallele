@@ -22,7 +22,7 @@ int main( int argc, char *argv[] ) {
     int nbLig=plateau.getY(), nbCol=plateau.getX();
     
     int N = nbLig*nbCol;
-    double temperature, temperatureAmbiante = 10.0;
+    double temperature, temperatureAmbiante = 20.0;
     MPI_Status etat;
     char *cmds[2] = {
             "coordinator.out", // Programme 1
