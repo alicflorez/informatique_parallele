@@ -10,19 +10,23 @@ int main( int argc, char *argv[] ) {
     char endSignal;
     char*  filename;
     int nbCycles;
-    if (argc > 2) {
+    int tailleMatriceCase;
+    double temperatureAmbiante;
+    if (argc > 4) {
         filename = argv[1];
         nbCycles = atoi(argv[2]);
+        tailleMatriceCase = atoi(argv[3]);
+        temperatureAmbiante = atof(argv[4]);
     } else {
-        printf ("Pas assez d'arguments passés: nom fichier / nombre de cycles de refroidissement.\n");
+        printf ("Pas assez d'arguments passés: nom fichier / nombre de cycles de refroidissement / taille de la matrice de la case du plateau / temperature ambiante.\n");
         exit(EXIT_FAILURE);
     }
     
-    Plaque_Metal plateau(filename); 
-    int nbLig=plateau.getY(), nbCol=plateau.getX();
+    Plaque_Metal plateau(filename, tailleMatriceCase); 
+    int nbLig=plateau.getPlateauNbLignes(), nbCol=plateau.getPlateauNbColonnes();
+    
     
     int N = nbLig*nbCol;
-    double temperature, temperatureAmbiante = 20.0;
     MPI_Status etat;
     char *cmds[2] = {
             "coordinator.out", // Programme 1
@@ -60,7 +64,6 @@ int main( int argc, char *argv[] ) {
     
     #pragma omp parallel for num_threads (N+1)
     for (int i=0; i< N+1; i++) {
-        temperature = 100;
         
         // Envoi la largeur du plateau au coordinateur
         MPI_Send (&nbCol, 1, MPI_INT, i, 0, intercomm);
@@ -73,7 +76,7 @@ int main( int argc, char *argv[] ) {
         if (i == 0)
             MPI_Send (&temperatureAmbiante, 1, MPI_DOUBLE, i, 0, intercomm);
         else {
-            double caseEsclave=plateau.getByNCase(i-1).getAverage();
+            double caseEsclave=plateau.getAverageByRank(i-1);
             MPI_Send (&caseEsclave, 1, MPI_DOUBLE, i, 0, intercomm);
         }
         printf ("\nPere : Envoi vers %d.\n", i);

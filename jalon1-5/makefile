@@ -14,3 +14,7 @@ clean:
 	rm -f slave.out
 	rm -f coordinator.out
 	rm -f master.out
+
+graphic: graphic.cpp
+	mpic++ graphic.cpp -o graphic.out -I/usr/local/include  -lGL -lGLU -lSDL2
+	mpirun -np 1 graphic.out 

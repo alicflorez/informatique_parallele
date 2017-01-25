@@ -1,5 +1,5 @@
 all: master coordinator slave
-	mpirun -np 1 master.out ${f} ${c}
+	mpirun -np 1 master.out ${f} ${c} ${m} ${t}
 
 master: master.cpp
 	mpic++ master.cpp Plaque_Metal.cpp Case_Plateau.cpp -o master.out -L/rep/SDL2/lib -I/usr/local/include  -lGL -lGLU -lSDL2 -Wno-write-strings
