@@ -19,6 +19,7 @@
 //#include <GL/gl.h>
 //#include <GL/glu.h>
 #include <GL/glut.h>
+#include "Plaque_Metal.h"
 
 class IHM {
 private:
@@ -38,6 +39,7 @@ public:
         float fondR, float fondV, float fondB,
         float formeR, float formeV, float formeB);
     void FenetreGraphique_representer_plaque(double **plateau, int nbLig, int nbCol);
+    void FenetreGraphique_representer_plaque(Plaque_Metal plateau);
 };
 
 #endif /* IHM_H */

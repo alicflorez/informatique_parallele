@@ -23,7 +23,7 @@ int main( int argc, char *argv[] ) {
     }
     
     Plaque_Metal plateau(filename, tailleMatriceCase); 
-    int nbLig=plateau.getPlateauNbLignes(), nbCol=plateau.getPlateauNbColonnes();
+    int nbLig=plateau.getNbLignes(), nbCol=plateau.getNbColonnes();
     
     
     int N = nbLig*nbCol;
@@ -65,19 +65,24 @@ int main( int argc, char *argv[] ) {
     #pragma omp parallel for num_threads (N+1)
     for (int i=0; i< N+1; i++) {
         
-        // Envoi la largeur du plateau au coordinateur
+        // Envoi la largeur du plateau à tous les fils
         MPI_Send (&nbCol, 1, MPI_INT, i, 0, intercomm);
         // Envoi la longueur du plateau à tous les fils
         MPI_Send (&nbLig, 1, MPI_INT, i, 0, intercomm);
-                
+
+        // Envoi la largeur de la matrice de la case à tous les fils
+        MPI_Send (&tailleMatriceCase, 1, MPI_INT, i, 0, intercomm);
+        
         MPI_Send (&nbCycles, 1, MPI_INT, i, 0, intercomm);
         
         
         if (i == 0)
             MPI_Send (&temperatureAmbiante, 1, MPI_DOUBLE, i, 0, intercomm);
         else {
-            double caseEsclave=plateau.getAverageByRank(i-1);
-            MPI_Send (&caseEsclave, 1, MPI_DOUBLE, i, 0, intercomm);
+            double *caseEsclave=plateau.getCaseByRank(i-1);
+            MPI_Send (caseEsclave, tailleMatriceCase*tailleMatriceCase, MPI_DOUBLE, i, 0, intercomm);
+//            double caseEsclave=plateau.getAverageByRank(i-1);
+//            MPI_Send (&caseEsclave, 1, MPI_DOUBLE, i, 0, intercomm);
         }
         printf ("\nPere : Envoi vers %d.\n", i);
     }

@@ -77,3 +77,16 @@ void IHM::FenetreGraphique_representer_plaque (double **plateau, int nbLig, int 
         }
     }
 }
+void IHM::FenetreGraphique_representer_plaque (Plaque_Metal plateau) {
+    for (int i=0; i<plateau.getNbLignes(); i++) {	
+        for (int j=0; j<plateau.getNbColonnes(); j++) {	
+            FenetreGrahique_dessinerRectangle (
+                    -xSize/2+(xSize/plateau.getNbColonnes())*j, 
+                    -(-ySize/2+(ySize/plateau.getNbLignes())*(i+1)), 
+                    -xSize/2+(xSize/plateau.getNbColonnes())*(j+1), 
+                    -(-ySize/2+(ySize/plateau.getNbLignes())*i), 
+                    plateau.getAverage(i, j)/90, 0, 1-plateau.getAverage(i, j)/90, 
+                    0.5, 0.5, 0.5);
+        }
+    }
+}

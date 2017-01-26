@@ -8,88 +8,115 @@
 #include "Plaque_Metal.h"
 
 // Constructeurs      
-Plaque_Metal::Plaque_Metal(char *filename, int tailleMatriceCase) {
+Plaque_Metal::Plaque_Metal(char *filename, int tailleCoteCase) {
     string line;
     string file_text="";
     string number;
-    setTailleMatriceCase(tailleMatriceCase);
+    setTailleCoteCase(tailleCoteCase);
     
     ifstream file; file.open(filename); 
-    int plateauNbLignes=0;
+    int nbLignes=0;
     while(getline(file, line)) {
-        int plateauNbColonnes=0;
+        int nbColonnes=0;
         stringstream ssin(line);
         while (ssin.good()){
             ssin >> number;
-            if (plateauNbLignes!=0||plateauNbColonnes!=0) file_text+=" ";
+            if (nbLignes!=0||nbColonnes!=0) file_text+=" ";
             file_text+=number.c_str();
             
-            plateauNbColonnes++;
-            if (plateauNbLignes==0) setPlateauNbColonnes(plateauNbColonnes);
+            nbColonnes++;
+            if (nbLignes==0) setNbColonnes(nbColonnes);
         }
         cout << endl;
 
-        plateauNbLignes++;
+        nbLignes++;
     }
-    setPlateauNbLignes(plateauNbLignes);
+    setNbLignes(nbLignes);
     file.close();
     
-    this->plateau=new double*[getPlateauNbLignes()*getPlateauNbColonnes()];
+    plateau=new double*[getNbLignes()*getNbColonnes()];
     stringstream ssin(file_text);
     
-    for (int y=0; y<getPlateauNbLignes(); y++) {
-        for (int x=0; x<getPlateauNbColonnes(); x++) {
-            ssin >> number;
-            double *casePlateau = new double[getTailleMatriceCase()*getTailleMatriceCase()];
-            for (int cursor=0; cursor<getTailleMatriceCase()*getTailleMatriceCase(); cursor++) {
-                casePlateau[cursor]=atof(number.c_str());
-            }
-            plateau[y*getPlateauNbColonnes()+x]=casePlateau;
+    for (int casePleateau=0; casePleateau<getNbLignes()*getNbColonnes(); casePleateau++) {
+        ssin >> number;
+        double *casePlateau = new double[getTailleCoteCase()*getTailleCoteCase()];
+        for (int cursor=0; cursor<getTailleCoteCase()*getTailleCoteCase(); cursor++) {
+            casePlateau[cursor]=atof(number.c_str());
+        }
+        plateau[casePleateau]=casePlateau;
+    }
+
+    printAll();
+}
+
+Plaque_Metal::Plaque_Metal(int nbLig, int nbCol, int tailleCoteCase) {
+    setNbColonnes(nbCol);
+    setNbLignes(nbLig);
+    setTailleCoteCase(tailleCoteCase);
+    plateau=new double*[nbLig*nbCol];
+    for (int casePleateau=0; casePleateau<nbLig*nbCol; casePleateau++) {
+        plateau[casePleateau]=new double[tailleCoteCase*tailleCoteCase];
+        for (int cursor=0; cursor<tailleCoteCase*tailleCoteCase; cursor++) {
+            plateau[casePleateau][cursor]=0.0;
         }
     }
-    
-    print();
 }
 
 double Plaque_Metal::getAverage(int y, int x) {
     double total=0;
-    for (int i=0; i<getTailleMatriceCase()*getTailleMatriceCase(); i++) {
-        total+=plateau[y*getPlateauNbColonnes()+x][i];
+    for (int i=0; i<getTailleCoteCase()*getTailleCoteCase(); i++) {
+        total+=plateau[y*getNbColonnes()+x][i];
     }
-    return total/(getTailleMatriceCase()*getTailleMatriceCase());
+    return total/(getTailleCoteCase()*getTailleCoteCase());
 }
 double Plaque_Metal::getAverageByRank(int caseRank) {
     double total=0;
-    for (int i=0; i<getPlateauNbLignes(); i++) {
+    for (int i=0; i<getTailleCoteCase()*getTailleCoteCase(); i++) {
         total+=plateau[caseRank][i];
     }
-    return total/(getTailleMatriceCase()*getTailleMatriceCase());
+    return total/(getTailleCoteCase()*getTailleCoteCase());
 }
 double *Plaque_Metal::getCaseByRank(int caseRank) {return plateau[caseRank];}
 
 void Plaque_Metal::set(int y, int x, double val) {
-    for (int i=0; i<getPlateauNbLignes(); i++) {
-        for (int j=0; j<getPlateauNbColonnes(); j++) {
-            plateau[y*getPlateauNbColonnes()+x][i*getTailleMatriceCase()+j]=val;
+    for (int i=0; i<getNbLignes(); i++) {
+        for (int j=0; j<getNbColonnes(); j++) {
+            plateau[y*getNbColonnes()+x][i*getTailleCoteCase()+j]=val;
         }
     }
 }
+void Plaque_Metal::set(int y, int x, double *val) {
+    plateau[y*getNbColonnes()+x]=val;
+}
 
-int Plaque_Metal::getPlateauNbLignes() {return plateauNbLignes;}
-int Plaque_Metal::getPlateauNbColonnes() {return plateauNbColonnes;}
-int Plaque_Metal::getTailleMatriceCase() {return tailleMatriceCase;}
+int Plaque_Metal::getNbLignes() {return nbLignes;}
+int Plaque_Metal::getNbColonnes() {return nbColonnes;}
+int Plaque_Metal::getTailleCoteCase() {return tailleCoteCase;}
 
-void Plaque_Metal::setPlateauNbLignes(int y) {this->plateauNbLignes=y;}
-void Plaque_Metal::setPlateauNbColonnes(int x) {this->plateauNbColonnes=x;}
-void Plaque_Metal::setTailleMatriceCase(int m) {this->tailleMatriceCase=m;}
+void Plaque_Metal::setNbLignes(int y) {this->nbLignes=y;}
+void Plaque_Metal::setNbColonnes(int x) {this->nbColonnes=x;}
+void Plaque_Metal::setTailleCoteCase(int m) {this->tailleCoteCase=m;}
 
-void Plaque_Metal::print(){
-    for (int y=0; y<getPlateauNbLignes(); y++) {
-        for(int x=0; x<getPlateauNbColonnes(); x++) {
-            getAverage(y, x);
-            printf("| %.3lf ", getAverage(y, x));
+void Plaque_Metal::printAll() {
+    for (int Y=0; Y<getNbLignes(); Y++) {
+        for (int y=0; y<getTailleCoteCase(); y++) {
+            for (int X=0; X<getNbColonnes()*getTailleCoteCase(); X++) {
+                if (X%getTailleCoteCase()==0)printf("|");
+                printf(" %.3lf ", getCaseByRank(Y+int(X/getTailleCoteCase()))[y*getTailleCoteCase()+X%getTailleCoteCase()]);
+            }
+            printf("|\n");
+        }
+        for (int X=0; X<getNbColonnes()*getTailleCoteCase(); X++) {
+            printf("--------");
+        }
+        printf("-------\n");
+    }
+}
+void Plaque_Metal::print() {
+    for (int i = 0; i < getNbLignes(); i++) {
+        for(int j = 0; j < getNbColonnes(); j++){
+            printf("| %.3lf ", getAverage(i, j) );
         }
         printf("|\n");
     }
 }
-    

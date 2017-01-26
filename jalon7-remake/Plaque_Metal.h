@@ -25,24 +25,27 @@ using namespace std;
 class Plaque_Metal {
 private: 
     //Case_Plateau 
-    double **plateau; int plateauNbLignes, plateauNbColonnes, tailleMatriceCase;
+    double **plateau; int nbLignes, nbColonnes, tailleCoteCase;
 
-    void setPlateauNbLignes(int y);
-    void setPlateauNbColonnes(int x);
-    void setTailleMatriceCase(int m);
+    void setNbLignes(int y);
+    void setNbColonnes(int x);
+    void setTailleCoteCase(int m);
 public: 
     // Constructeurs
     Plaque_Metal(char *filename, int tailleMatriceCase);
+    Plaque_Metal(int nbLig, int nbCol, int tailleMatriceCase);
 
     double getAverage(int y, int x);
     double getAverageByRank(int caseRank);
     double *getCaseByRank(int caseRank);
     void set(int y, int x, double val);
+    void set(int y, int x, double *val);
 
-    int getPlateauNbLignes();
-    int getPlateauNbColonnes();
-    int getTailleMatriceCase();
+    int getNbLignes();
+    int getNbColonnes();
+    int getTailleCoteCase();
     
+    void printAll();
     void print();
 };
 #endif /* PLAQUE_METAL_H */
