@@ -14,7 +14,6 @@ int main( int argc, char *argv[] ) {
     char endSignal = 'e';
     int **macroVoisins;
     double **tempVoisins;
-    int **rangPlateau;
 
     // Initialisation communication
     MPI_Comm parent;
@@ -42,6 +41,7 @@ int main( int argc, char *argv[] ) {
         MPI_Recv(&nbCycles, 1, MPI_INT, 0, 0, parent, &etat);
         
         double temperature[tailleCoteCase*tailleCoteCase];
+//        double temperature;
         // Reception de la température de la dalle
         MPI_Recv(temperature, tailleCoteCase*tailleCoteCase, MPI_DOUBLE, 0, 0, parent, &etat);
 //        double temperature;
@@ -58,32 +58,25 @@ int main( int argc, char *argv[] ) {
         MPI_Recv(&temperatureAmbiante, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &etat);
         //printf ("Fils %d : Esclave : La temperature ambiante est de %.3lf !\n", myrank, temperatureAmbiante);
         
-//        MPI_Send(&temperature, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
         MPI_Send(temperature, tailleCoteCase*tailleCoteCase, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+//        MPI_Send(&temperature, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
         
-        
-        //Calcul de la position du carré sur le plateau
-        positionCol = (myrank-1)%nbCol;
-        positionLig = (myrank-1)/nbCol;
-
         tempVoisins = new double *[3];
-        macroVoisins = new int *[3];
-        for(int i=0; i<3; i++){
-            macroVoisins[i]=new int[3];
-            tempVoisins[i]=new double [3];
-        }
-        
-        
-        
+        macroVoisins = new int *[3];   
         //On trouve les voisins
-        for(int i=-1; i<=1; i++)
+        for(int i=-1; i<=1; i++) { 
+            macroVoisins[i+1]=new int[3];
+            tempVoisins[i+1]=new double[3];
+            
             for(int j=-1; j<=1; j++) {
                 if (myrank<=nbCol && i==-1 || myrank>nbCol*(nbLig-1) && i==1 || myrank%nbCol==0 && j==1 || (myrank+j)%nbCol==0 && j==-1) {
                     macroVoisins[i+1][j+1]=-1;
+                    tempVoisins[i+1][j+1]=temperatureAmbiante;
                 } else {
                     macroVoisins[i+1][j+1]=myrank+i*nbCol+j;
                 }
             }
+        }
      
 //    cout << myrank << ")"  << endl;   
 //    for (int i = 0; i < 3; i++) {
@@ -112,24 +105,27 @@ int main( int argc, char *argv[] ) {
                 for(int j = 0; j < 3; j++) {
                     if (macroVoisins[i][j] != myrank) {
                         if (macroVoisins[i][j] != -1 ) {
+//                            cout << myrank << ") voisin: Y: " << int((myrank-macroVoisins[i][j])/nbCol)*(-1)+1
+//                            << " X: " << (myrank-macroVoisins[i][j])%nbCol*(-1)+1;
                             double temp[tailleCoteCase*tailleCoteCase];
                             MPI_Recv(temp, tailleCoteCase*tailleCoteCase, MPI_DOUBLE, macroVoisins[i][j], 0, MPI_COMM_WORLD, &etat);
-//                
-//            cout << myrank << ")"  << endl;   
-//            for (int a=0; a<3; a++) {
-//                for(int b=0; b<3; b++){
-//                    printf("| %.3lf ", temp[a*tailleCoteCase+b] );
-//                }
-//                printf("|\n");
-//            }
+      
+//                            for (int a=0; a<3; a++) {
+//                                cout << myrank << ") voisin: ";
+//                                for(int b=0; b<3; b++){
+//                                    printf("| %.3lf ", temp[a*tailleCoteCase+b] );
+//                                }
+//                                printf("|\n");
+//                            }
+                            
                             tempVoisins[i][j] = temp[0];
                             //printf("Fils %d : Température reçu de la part de Slave %d ! \n", myrank, voisins[i][j] );
-                        } else 
-                            tempVoisins[i][j] = temperatureAmbiante;						
+                        }			
                     } else
-                        tempVoisins[i][j] = temperature[0];					
+                        tempVoisins[1][1] = temperature[0];					
                 }
             }
+                
             // Calcul de la nouvelle température ( moyenne de toutes les température des voisins + le carré)
             double sum=0;
             for(int i = 0; i < 3; i++) 
@@ -137,7 +133,7 @@ int main( int argc, char *argv[] ) {
                     sum += tempVoisins[i][j];
 
             for(int i=0; i<tailleCoteCase*tailleCoteCase; i++)
-                temperature[i] = sum/tailleCoteCase*tailleCoteCase ;
+                temperature[i] = sum/9 ;
 
 //            printf("Fils %d : L'Esclave a mis à jour sa temperature ! \n", myrank );
             //PlateauDoubleToString(3,3, tempVoisins);
@@ -151,15 +147,9 @@ int main( int argc, char *argv[] ) {
             delete[] macroVoisins[i];
             delete[] tempVoisins[i];
         }
-    
-
         delete[] tempVoisins;
         delete[] macroVoisins;
 
-        for(int i = 0; i < nbLig; i++)
-        delete[] rangPlateau[i];
-
-        delete[] rangPlateau;
     }
 
     printf ("Fils %d : Slave: Fin !\n", myrank);

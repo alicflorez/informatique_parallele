@@ -25,7 +25,7 @@ int main( int argc, char *argv[] ) {
     Plaque_Metal plateau(filename, tailleMatriceCase); 
     int nbLig=plateau.getNbLignes(), nbCol=plateau.getNbColonnes();
     
-    
+       
     int N = nbLig*nbCol;
     MPI_Status etat;
     char *cmds[2] = {
@@ -63,7 +63,7 @@ int main( int argc, char *argv[] ) {
     // ses fils en utilisant l'espace de communication intercomm
     
     #pragma omp parallel for num_threads (N+1)
-    for (int i=0; i< N+1; i++) {
+    for (int i=0; i<N+1; i++) {
         
         // Envoi la largeur du plateau à tous les fils
         MPI_Send (&nbCol, 1, MPI_INT, i, 0, intercomm);
