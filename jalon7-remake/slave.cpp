@@ -88,7 +88,7 @@ int main( int argc, char *argv[] ) {
             
         for (int cycle=0; cycle < nbCycles; cycle++) {
             // Envoi de la température à tous les voisins
-            for(int i = 0; i < 3; i++)
+            for(int i = 0; i < 3; i++) {
                 for(int j = 0; j < 3; j++) {
                     if (macroVoisins[i][j] != -1 && macroVoisins[i][j] != myrank) {
 //                        MPI_Isend(&temperature, 1, MPI_DOUBLE, macroVoisins[i][j], 0, MPI_COMM_WORLD, &req);
@@ -98,6 +98,7 @@ int main( int argc, char *argv[] ) {
                         //printf("Fils %d : Envoi de la temperature au voisins Fils %d \n", myrank, voisins[i][j]);
                     }
                 }
+            }
             //printf("Fils %d : Température envoyée à tous les voisins !\n", myrank );
 
             // Reception de la temperature de la part des voisins
