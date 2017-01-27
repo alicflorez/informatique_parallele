@@ -101,6 +101,10 @@ void Plaque_Metal::setTailleCoteCase(int m) {this->tailleCoteCase=m;}
 
 void Plaque_Metal::printAll() {
     for (int Y=0; Y<getNbLignes(); Y++) {
+        for (int X=0; X<getNbColonnes()*getTailleCoteCase(); X++) {
+            printf("--------");
+        }
+        printf("-------\n");
         for (int y=0; y<getTailleCoteCase(); y++) {
             for (int X=0; X<getNbColonnes()*getTailleCoteCase(); X++) {
                 if (X%getTailleCoteCase()==0)printf("|");

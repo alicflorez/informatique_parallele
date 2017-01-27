@@ -67,8 +67,7 @@ int main( int argc, char *argv[] ) {
                 nEsclave++;
                 double temperature[tailleMatriceCase*tailleMatriceCase];
                 MPI_Recv(temperature, tailleMatriceCase*tailleMatriceCase, MPI_DOUBLE, nEsclave, 0, MPI_COMM_WORLD, &etat);
-//                double temperature;
-//                MPI_Recv(&temperature, 1, MPI_DOUBLE, nEsclave, 0, MPI_COMM_WORLD, &etat);
+                
                 printf ("Coordinateur : La temperature de %d est de %.3lf !\n", nEsclave, temperature[0]); //TODO
 
                 plateau.set(nEsclave, temperature);
@@ -90,8 +89,7 @@ int main( int argc, char *argv[] ) {
                     nEsclave++;
                     double temperature[tailleMatriceCase*tailleMatriceCase];
                     MPI_Recv(temperature, tailleMatriceCase*tailleMatriceCase, MPI_DOUBLE, nEsclave, 0, MPI_COMM_WORLD, &etat);
-//                    double temperature;
-//                    MPI_Recv(&temperature, 1, MPI_DOUBLE, nEsclave, 0, MPI_COMM_WORLD, &etat);
+                    
                     printf ("Coordinateur : La temperature de %d est de %.3lf !\n", nEsclave, temperature[0]);
 
                     plateau.set(nEsclave, temperature);
