@@ -26,7 +26,7 @@ int main( int argc, char *argv[] ) {
 
     // IHM 
 
-//    IHM ihm = IHM(800, 600, -2, 2, -2, 2);
+    IHM ihm = IHM(800, 600, -2, 2, -2, 2);
 
     if (parent == MPI_COMM_NULL) {
         printf ("Fils %d : Coordinateur : Pas de pere !\n", myrank);
@@ -58,8 +58,8 @@ int main( int argc, char *argv[] ) {
             MPI_Send(&temperatureAmbiante, 1, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
         }
             
-//        ihm.FenetreGraphique_rendre();
-//        ihm.FenetreGraphique_initialiser();
+        ihm.FenetreGraphique_rendre();
+        ihm.FenetreGraphique_initialiser();
         
         int nEsclave = 0;
         for (int i=0; i < nbLig; i++) {	
@@ -71,12 +71,12 @@ int main( int argc, char *argv[] ) {
 //                MPI_Recv(&temperature, 1, MPI_DOUBLE, nEsclave, 0, MPI_COMM_WORLD, &etat);
                 printf ("Coordinateur : La temperature de %d est de %.3lf !\n", nEsclave, temperature[0]); //TODO
 
-                plateau.set(i, j, temperature);
+                plateau.set(nEsclave, temperature);
             }
         }
             
-//        ihm.FenetreGraphique_representer_plaque(plateau);
-//        ihm.FenetreGraphique_rendre();        
+        ihm.FenetreGraphique_representer_plaque(plateau);
+        ihm.FenetreGraphique_rendre();        
         plateau.printAll();
         
         for (int iteration=0; iteration<nbCycles; iteration++){
@@ -94,13 +94,13 @@ int main( int argc, char *argv[] ) {
 //                    MPI_Recv(&temperature, 1, MPI_DOUBLE, nEsclave, 0, MPI_COMM_WORLD, &etat);
                     printf ("Coordinateur : La temperature de %d est de %.3lf !\n", nEsclave, temperature[0]);
 
-                    plateau.set(i, j, temperature);
+                    plateau.set(nEsclave, temperature);
                 }
             }       
             plateau.printAll();
 
-//            ihm.FenetreGraphique_representer_plaque(plateau);
-//            ihm.FenetreGraphique_rendre();
+            ihm.FenetreGraphique_representer_plaque(plateau);
+            ihm.FenetreGraphique_rendre();
         }
 
         // Envoi du message de fin de simulation au maitre
@@ -113,6 +113,6 @@ int main( int argc, char *argv[] ) {
 
     MPI_Finalize();
 
-//    ihm.FenetreGraphique_fermer();
+    ihm.FenetreGraphique_fermer();
     return 0;
 }

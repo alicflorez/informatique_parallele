@@ -85,11 +85,9 @@ void Plaque_Metal::set(int y, int x, double val) {
         }
     }
 }
-void Plaque_Metal::set(int y, int x, double *val) {
-    for (int i=0; i<getNbLignes(); i++) {
-        for (int j=0; j<getNbColonnes(); j++) {
-            plateau[y*getNbColonnes()+x][i*getTailleCoteCase()+j]=val[i*getTailleCoteCase()+j];
-        }
+void Plaque_Metal::set(int caseRank, double *val) {
+    for (int i=0; i<getTailleCoteCase()*getTailleCoteCase(); i++) {
+        plateau[caseRank-1][i]=val[i];
     }
 }
 

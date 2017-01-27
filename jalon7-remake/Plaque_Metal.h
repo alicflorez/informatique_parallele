@@ -39,7 +39,7 @@ public:
     double getAverageByRank(int caseRank);
     double *getCaseByRank(int caseRank);
     void set(int y, int x, double val);
-    void set(int y, int x, double *val);
+    void set(int caseRank, double *val);
 
     int getNbLignes();
     int getNbColonnes();
