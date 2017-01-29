@@ -15,7 +15,7 @@ int main( int argc, char *argv[] ) {
     // Propriétés
     double temperatureAmbiante;
     char endSignal = 'c';
-    int myrank, N, nbLig, nbCol, tailleMatriceCase, nbCycles;
+    int myrank, N, nbLig, nbCol, tailleCoteCase, nbCycles;
 
     // Initialisation communication
     MPI_Comm parent;
@@ -36,7 +36,7 @@ int main( int argc, char *argv[] ) {
         // Reception de la longueur du plateau
         MPI_Recv(&nbLig, 1, MPI_INT, 0, 0, parent, &etat);
         // Reception de la longueur du plateau
-        MPI_Recv(&tailleMatriceCase, 1, MPI_INT, 0, 0, parent, &etat);
+        MPI_Recv(&tailleCoteCase, 1, MPI_INT, 0, 0, parent, &etat);
         //printf("Le Coordinateur a reçu la longueur %d du plateau\n", nbLig);
 
         MPI_Recv(&nbCycles, 1, MPI_INT, 0, 0, parent, &etat);
@@ -50,7 +50,7 @@ int main( int argc, char *argv[] ) {
         //printf ("Fils %d : Coordinateur : La temperature ambiante recue est de %.3lf !\n", myrank, temperatureAmbiante);
 
 
-        Plaque_Metal plateau = Plaque_Metal(nbLig, nbCol, tailleMatriceCase);
+        Plaque_Metal plateau = Plaque_Metal(nbLig, nbCol, tailleCoteCase);
 
         // Envoi de la temperature ambiante aux esclaves 10 fois
         for (int i=1; i<=N; i++) {		
@@ -65,8 +65,8 @@ int main( int argc, char *argv[] ) {
         for (int i=0; i < nbLig; i++) {	
             for (int j=0; j < nbCol; j++) {	
                 nEsclave++;
-                double temperature[tailleMatriceCase*tailleMatriceCase];
-                MPI_Recv(temperature, tailleMatriceCase*tailleMatriceCase, MPI_DOUBLE, nEsclave, 0, MPI_COMM_WORLD, &etat);
+                double temperature[tailleCoteCase*tailleCoteCase];
+                MPI_Recv(temperature, tailleCoteCase*tailleCoteCase, MPI_DOUBLE, nEsclave, 0, MPI_COMM_WORLD, &etat);
                 
                 printf ("Coordinateur : La temperature de %d est de %.3lf !\n", nEsclave, temperature[0]); //TODO
 
@@ -87,8 +87,8 @@ int main( int argc, char *argv[] ) {
             for (int i=0; i<nbLig; i++) {	
                 for (int j=0; j<nbCol; j++) {	
                     nEsclave++;
-                    double temperature[tailleMatriceCase*tailleMatriceCase];
-                    MPI_Recv(temperature, tailleMatriceCase*tailleMatriceCase, MPI_DOUBLE, nEsclave, 0, MPI_COMM_WORLD, &etat);
+                    double temperature[tailleCoteCase*tailleCoteCase];
+                    MPI_Recv(temperature, tailleCoteCase*tailleCoteCase, MPI_DOUBLE, nEsclave, 0, MPI_COMM_WORLD, &etat);
                     
                     printf ("Coordinateur : La temperature de %d est de %.3lf !\n", nEsclave, temperature[0]);
 

@@ -100,15 +100,15 @@ void Plaque_Metal::setNbColonnes(int x) {this->nbColonnes=x;}
 void Plaque_Metal::setTailleCoteCase(int m) {this->tailleCoteCase=m;}
 
 void Plaque_Metal::printAll() {
+    for (int X=0; X<getNbColonnes()*getTailleCoteCase(); X++) {
+        printf("--------");
+    }
+    printf("-------\n");
     for (int Y=0; Y<getNbLignes(); Y++) {
-        for (int X=0; X<getNbColonnes()*getTailleCoteCase(); X++) {
-            printf("--------");
-        }
-        printf("-------\n");
         for (int y=0; y<getTailleCoteCase(); y++) {
             for (int X=0; X<getNbColonnes()*getTailleCoteCase(); X++) {
                 if (X%getTailleCoteCase()==0)printf("|");
-                printf(" %.3lf ", getCaseByRank(Y+int(X/getTailleCoteCase()))[y*getTailleCoteCase()+X%getTailleCoteCase()]);
+                printf(" %.3lf ", getCaseByRank(Y*getNbColonnes()+int(X/getTailleCoteCase()))[y*getTailleCoteCase()+X%getTailleCoteCase()]);
             }
             printf("|\n");
         }
