@@ -138,7 +138,7 @@ int main( int argc, char *argv[] ) {
 //							cout<<" ("<<i<<":"<<j<<") "<<tempVoisins[y+i][x+j];
 						}
 					}
-					temperature[(y-1)*tailleCoteCase+(x-1)] = sum/(tailleCoteCase*tailleCoteCase);
+					temperature[(y-1)*tailleCoteCase+(x-1)] = sum/9;
 //					cout<<" = "<<(y-1)*tailleCoteCase+(x-1)<<") "<<sum/(tailleCoteCase*tailleCoteCase)<<endl;
 				}
 			}
