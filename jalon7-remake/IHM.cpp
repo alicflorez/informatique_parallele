@@ -5,9 +5,10 @@
  */
 #include "IHM.h"
 
-IHM::IHM(int largeurDeLaFenetre, int hauteurDeLaFenetre, double xMin, double xMax, double yMin, double yMax) {
+IHM::IHM(int largeurDeLaFenetre, int hauteurDeLaFenetre, double xMin, double xMax, double yMin, double yMax, int vitesse) {
     xSize=1.6;
     ySize=1.6;
+    this->vitesse=vitesse;
     displayRenderer=FenetreGraphique_creer(largeurDeLaFenetre, hauteurDeLaFenetre, xMin, xMax, yMin, yMax);
 }
 
@@ -38,7 +39,14 @@ void IHM::FenetreGraphique_initialiser () {
 }
 void IHM::FenetreGraphique_rendre () {
     SDL_RenderPresent (displayRenderer);
-    SDL_Delay(800);
+    if (vitesse==0)
+        SDL_Delay(1000);
+    else if (vitesse==1)
+        SDL_Delay(700);
+    else if (vitesse==2)
+        SDL_Delay(400);
+    else
+        SDL_Delay(100);
 }
 void IHM::FenetreGraphique_fermer () {
     SDL_Quit();
@@ -64,29 +72,21 @@ void IHM::FenetreGrahique_dessinerRectangle (double x1, double y1, double x2, do
         glVertex2f (x1, y2);
     glEnd ();
 }
-void IHM::FenetreGraphique_representer_plaque (double **plateau, int nbLig, int nbCol) {
-    for (int i=0; i < nbLig; i++) {	
-        for (int j=0; j < nbCol; j++) {	
-            FenetreGrahique_dessinerRectangle (
-                    -xSize/2+(xSize/nbCol)*j, 
-                    -(-ySize/2+(ySize/nbLig)*(i+1)), 
-                    -xSize/2+(xSize/nbCol)*(j+1), 
-                    -(-ySize/2+(ySize/nbLig)*i), 
-                    plateau[i][j]/90, 0, 1-plateau[i][j]/90, 
-                    0.5, 0.5, 0.5);
-        }
-    }
-}
 void IHM::FenetreGraphique_representer_plaque (Plaque_Metal plateau) {
-    for (int i=0; i<plateau.getNbLignes(); i++) {	
-        for (int j=0; j<plateau.getNbColonnes(); j++) {	
-            FenetreGrahique_dessinerRectangle (
-                    -xSize/2+(xSize/plateau.getNbColonnes())*j, 
-                    -(-ySize/2+(ySize/plateau.getNbLignes())*(i+1)), 
-                    -xSize/2+(xSize/plateau.getNbColonnes())*(j+1), 
-                    -(-ySize/2+(ySize/plateau.getNbLignes())*i), 
-                    plateau.getAverage(i, j)/90, 0, 1-plateau.getAverage(i, j)/90, 
-                    0.5, 0.5, 0.5);
+    for (int Y=0; Y<plateau.getNbLignes(); Y++) {	
+        for (int X=0; X<plateau.getNbColonnes(); X++) {	
+
+            for (int y=0; y<plateau.getTailleCoteCase(); y++) {   
+                for (int x=0; x<plateau.getTailleCoteCase(); x++) { 
+                    FenetreGrahique_dessinerRectangle (
+                            -xSize/2+(xSize/plateau.getNbColonnes())*X+(xSize/plateau.getNbColonnes()/plateau.getTailleCoteCase())*x+(x==0?0.05/plateau.getNbColonnes():0.0), 
+                            -(-ySize/2+(ySize/plateau.getNbLignes())*Y+(ySize/plateau.getNbLignes()/plateau.getTailleCoteCase())*(y+1)), 
+                            -xSize/2+(xSize/plateau.getNbColonnes())*X+(xSize/plateau.getNbColonnes()/plateau.getTailleCoteCase())*(x+1), 
+                            -(-ySize/2+(ySize/plateau.getNbLignes())*Y+(ySize/plateau.getNbLignes()/plateau.getTailleCoteCase())*(y))-(y==0?0.05/plateau.getNbLignes():0.0), 
+                            (plateau.getMaxTemperature()==0?0.0:plateau.getCaseByRank(Y*plateau.getNbColonnes()+X)[y*plateau.getTailleCoteCase()+x]/plateau.getMaxTemperature()), 0, (plateau.getMaxTemperature()==0?1.0:1-plateau.getCaseByRank(Y*plateau.getNbColonnes()+X)[y*plateau.getTailleCoteCase()+x]/plateau.getMaxTemperature()), 
+                            0.5, 0.5, 0.5);
+                }
+            }
         }
     }
 }

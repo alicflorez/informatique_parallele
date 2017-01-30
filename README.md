@@ -5,7 +5,7 @@ Jonathan BARONCI
 Aymeric COSSARD
 Alicia FLOREZ
 
-## Install du bordel
+## Install
 
 Télécharger et installer MPI
 
@@ -20,8 +20,15 @@ $ make all
 
 Télécharger et installer DSL2 https://www.libsdl.org/download-2.0.php (procédure dans install.txt)
 
-## Lancer le bordel
+## Lancer
 
 ```
-$ make all
+$ make all f="path_relatif_du_fichier" c="nombre_de_cycles" m="taille_cote_matrice_chaque_case" t="temperature_ambiante" v="vitesse_defilement"
+
+vitesse:
+	0 = 1 seconde de pause entre iterations
+	1 = 0.7 secondes de pause entre iterations
+	2 = 0.4 secondes de pause entre iterations
+	3 = 0.1 secondes de pause entre iterations
+
 ```

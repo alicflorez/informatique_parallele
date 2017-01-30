@@ -12,13 +12,15 @@ int main( int argc, char *argv[] ) {
     int nbCycles;
     int tailleMatriceCase;
     double temperatureAmbiante;
-    if (argc > 4) {
+    int vitesse;
+    if (argc > 5) {
         filename = argv[1];
         nbCycles = atoi(argv[2]);
         tailleMatriceCase = atoi(argv[3]);
         temperatureAmbiante = atof(argv[4]);
+        vitesse = atoi(argv[5]);
     } else {
-        printf ("Pas assez d'arguments passés: nom fichier / nombre de cycles de refroidissement / taille de la matrice de la case du plateau / temperature ambiante.\n");
+        printf ("Pas assez d'arguments passés: nom fichier / nombre de cycles de refroidissement / taille de la matrice de la case du plateau / temperature ambiante / vitesse.\n");
         exit(EXIT_FAILURE);
     }
     
@@ -76,9 +78,10 @@ int main( int argc, char *argv[] ) {
         MPI_Send (&nbCycles, 1, MPI_INT, i, 0, intercomm);
         
         
-        if (i == 0)
+        if (i == 0) {
             MPI_Send (&temperatureAmbiante, 1, MPI_DOUBLE, i, 0, intercomm);
-        else {
+            MPI_Send (&vitesse, 1, MPI_INT, i, 0, intercomm);
+        } else {
             double *caseEsclave=plateau.getCaseByRank(i-1);
             MPI_Send (caseEsclave, tailleMatriceCase*tailleMatriceCase, MPI_DOUBLE, i, 0, intercomm);
 //            double caseEsclave=plateau.getAverageByRank(i-1);

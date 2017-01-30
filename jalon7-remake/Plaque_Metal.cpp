@@ -46,6 +46,7 @@ Plaque_Metal::Plaque_Metal(char *filename, int tailleCoteCase) {
         plateau[casePleateau]=casePlateau;
     }
 
+    findMaxTemperature();
     printAll();
 }
 
@@ -60,6 +61,19 @@ Plaque_Metal::Plaque_Metal(int nbLig, int nbCol, int tailleCoteCase) {
             plateau[casePleateau][cursor]=0.0;
         }
     }
+}
+
+void Plaque_Metal::findMaxTemperature() {    
+    double max=0.0;
+    for (int i=0; i<getNbLignes()*getNbColonnes(); i++) {
+        for (int j=0; j<getTailleCoteCase()*getTailleCoteCase(); j++) {
+            if (plateau[i][j]>max) max=plateau[i][j];
+        }
+    }
+    maxTemperature=max;
+}
+double Plaque_Metal::getMaxTemperature() {
+    return maxTemperature;
 }
 
 double Plaque_Metal::getAverage(int y, int x) {

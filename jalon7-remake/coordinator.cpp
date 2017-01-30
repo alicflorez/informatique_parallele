@@ -15,7 +15,7 @@ int main( int argc, char *argv[] ) {
     // Propriétés
     double temperatureAmbiante;
     char endSignal = 'c';
-    int myrank, N, nbLig, nbCol, tailleCoteCase, nbCycles;
+    int myrank, N, nbLig, nbCol, tailleCoteCase, nbCycles, vitesse;
 
     // Initialisation communication
     MPI_Comm parent;
@@ -25,9 +25,6 @@ int main( int argc, char *argv[] ) {
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 
     // IHM 
-
-    IHM ihm = IHM(800, 600, -2, 2, -2, 2);
-
     if (parent == MPI_COMM_NULL) {
         printf ("Fils %d : Coordinateur : Pas de pere !\n", myrank);
     } else {
@@ -47,6 +44,7 @@ int main( int argc, char *argv[] ) {
 
         // Reception de la temperature ambiante
         MPI_Recv(&temperatureAmbiante, 1, MPI_DOUBLE, 0, 0, parent, &etat);
+        MPI_Recv(&vitesse, 1, MPI_INT, 0, 0, parent, &etat);
         //printf ("Fils %d : Coordinateur : La temperature ambiante recue est de %.3lf !\n", myrank, temperatureAmbiante);
 
 
@@ -58,8 +56,6 @@ int main( int argc, char *argv[] ) {
             MPI_Send(&temperatureAmbiante, 1, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
         }
             
-        ihm.FenetreGraphique_rendre();
-        ihm.FenetreGraphique_initialiser();
         
         int nEsclave = 0;
         for (int i=0; i < nbLig; i++) {	
@@ -74,9 +70,16 @@ int main( int argc, char *argv[] ) {
             }
         }
             
+        plateau.printAll();
+        plateau.findMaxTemperature();
+
+
+        IHM ihm = IHM(800, 600, -2, 2, -2, 2, vitesse);
+
+        ihm.FenetreGraphique_rendre();
+        ihm.FenetreGraphique_initialiser();
         ihm.FenetreGraphique_representer_plaque(plateau);
         ihm.FenetreGraphique_rendre();        
-        plateau.printAll();
         
         for (int iteration=0; iteration<nbCycles; iteration++){
 
@@ -106,11 +109,11 @@ int main( int argc, char *argv[] ) {
         MPI_Send(&endSignal, 1, MPI_CHAR, 0, 0, parent);
 
         //usleep(microseconds);*/
+        ihm.FenetreGraphique_fermer();
     }
     printf ("Fils %d : Coordinateur : fin !\n", myrank);
 
     MPI_Finalize();
 
-    ihm.FenetreGraphique_fermer();
     return 0;
 }

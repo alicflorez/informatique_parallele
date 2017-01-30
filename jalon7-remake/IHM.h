@@ -25,10 +25,11 @@ class IHM {
 private:
     double xSize;
     double ySize;
+    int vitesse;
     SDL_Renderer* displayRenderer;
 public:
     IHM(int largeurDeLaFenetre, int hauteurDeLaFenetre, 
-        double xMin, double xMax, double yMin, double yMax); 
+        double xMin, double xMax, double yMin, double yMax, int vitesse); 
     SDL_Renderer* FenetreGraphique_creer(int largeurDeLaFenetre, int hauteurDeLaFenetre, 
         double xMin, double xMax, double yMin, double yMax);
     void FenetreGraphique_initialiser();
@@ -38,7 +39,6 @@ public:
     void FenetreGrahique_dessinerRectangle(double x1, double y1, double x2, double y2,
         float fondR, float fondV, float fondB,
         float formeR, float formeV, float formeB);
-    void FenetreGraphique_representer_plaque(double **plateau, int nbLig, int nbCol);
     void FenetreGraphique_representer_plaque(Plaque_Metal plateau);
 };
 

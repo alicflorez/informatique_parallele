@@ -18,14 +18,13 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include "Case_Plateau.h"
 
 using namespace std;
 
 class Plaque_Metal {
 private: 
     //Case_Plateau 
-    double **plateau; int nbLignes, nbColonnes, tailleCoteCase;
+    double **plateau; int nbLignes, nbColonnes, tailleCoteCase; double maxTemperature;
 
     void setNbLignes(int y);
     void setNbColonnes(int x);
@@ -45,6 +44,9 @@ public:
     int getNbColonnes();
     int getTailleCoteCase();
     
+    void findMaxTemperature();
+    double getMaxTemperature();
+
     void printAll();
     void print();
 };
