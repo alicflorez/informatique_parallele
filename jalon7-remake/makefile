@@ -8,7 +8,7 @@ coordinator: coordinator.cpp
 	mpic++ coordinator.cpp IHM.cpp Plaque_Metal.cpp -o coordinator.out -I/usr/local/include  -lGL -lGLU -lSDL2
 
 slave: slave.cpp
-	mpic++ slave.cpp -o slave.out
+	mpic++ -fopenmp slave.cpp -o slave.out
 
 clean:
 	rm -f slave.out

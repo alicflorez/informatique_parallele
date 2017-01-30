@@ -45,8 +45,10 @@ void IHM::FenetreGraphique_rendre () {
         SDL_Delay(700);
     else if (vitesse==2)
         SDL_Delay(400);
-    else
+    else if (vitesse==3)
         SDL_Delay(100);
+    else
+        SDL_Delay(10);
 }
 void IHM::FenetreGraphique_fermer () {
     SDL_Quit();

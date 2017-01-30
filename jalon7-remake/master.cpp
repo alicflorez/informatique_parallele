@@ -64,7 +64,6 @@ int main( int argc, char *argv[] ) {
     // Le père communique de façon synchrone avec chacun de
     // ses fils en utilisant l'espace de communication intercomm
     
-    #pragma omp parallel for num_threads (N+1)
     for (int i=0; i<N+1; i++) {
         
         // Envoi la largeur du plateau à tous les fils

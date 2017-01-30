@@ -1,4 +1,5 @@
 #include <mpi.h>
+#include <omp.h>
 #include <stdio.h>
 #include <iostream>
 
@@ -128,7 +129,11 @@ int main( int argc, char *argv[] ) {
 
 
 			// Calcul de la nouvelle température ( moyenne de toutes les température des voisins + le carré)
+
+            omp_set_nested(1);
+            #pragma omp parallel for num_threads (tailleCoteCase)
 			for(int y=1; y<tailleCoteCase+1; y++) {
+                #pragma omp parallel for num_threads (tailleCoteCase)
 				for(int x=1; x<tailleCoteCase+1; x++) {
 //					cout<<myrank<<") "<<y<<":"<<x;
 					double sum=0.0;
